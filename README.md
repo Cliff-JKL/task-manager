@@ -6,6 +6,8 @@ This is a simple task manager app.
 
 This app is built with NestJS framework and MySQL Database.
 
+Web client: <a href="https://github.com/Cliff-JKL/task-manager-client" target="_blank">task-manager-client</a>.
+
 ## Installation
 
 ```bash
