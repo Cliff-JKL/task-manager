@@ -57,7 +57,7 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async delete(@Param('id') id: string, @User() user: any): Promise<void> {
+  async delete(@Param('id') id: string, @User() user: any): Promise<Task> {
     return this.tasksService.delete(id, user.userId);
   }
 }

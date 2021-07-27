@@ -58,13 +58,13 @@ export class TasksService {
     return await this.tasksRepository.find({ where: { user: userId } });
   }
 
-  async delete(id: string, userId: string): Promise<void> {
+  async delete(id: string, userId: string): Promise<Task> {
     const deletedTask = await this.tasksRepository.findOne({
       where: { user: userId, id: id },
     });
     if (deletedTask == undefined) {
       throw new NotFoundException();
     }
-    await this.tasksRepository.delete(id);
+    return await this.tasksRepository.remove(deletedTask);
   }
 }
