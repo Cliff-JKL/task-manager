@@ -13,7 +13,7 @@ const { DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME } =
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'mysql',
+      type: 'postgres',
       host: DB_HOST,
       port: Number(DB_PORT),
       username: DB_USERNAME,
@@ -21,10 +21,14 @@ const { DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME } =
       database: DB_DATABASE_NAME,
       entities: [User, Task],
       synchronize: true,
+      migrations: ["dist/migrations/*{.ts,.js}"],
+      migrationsTableName: "migrations_typeorm",
+      migrationsRun: true
+
     }),
-    TasksModule,
     AuthModule,
     UsersModule,
+    TasksModule,
   ],
 })
 export class AppModule implements NestModule {
