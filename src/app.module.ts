@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { Task } from './tasks/entities/task.entity';
+import { RefreshToken } from "./auth/entities/refreshToken.entity";
 const { DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME } =
   process.env;
 
@@ -19,7 +20,7 @@ const { DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME } =
       username: DB_USERNAME,
       password: DB_PASSWORD,
       database: DB_DATABASE_NAME,
-      entities: [User, Task],
+      entities: [User, Task, RefreshToken],
       synchronize: true,
       migrations: ["dist/migrations/*{.ts,.js}"],
       migrationsTableName: "migrations_typeorm",
