@@ -1,17 +1,31 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Task {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('increment')
+  readonly id: number;
 
-  @Column()
-  name: string;
+  @Column({ name: 'creator_uid', type: 'uuid' })
+  creatorUid: string;
 
-  @Column({ default: false })
+  @Column({ type: 'varchar', length: 50 })
+  text: string;
+
+  @Column({ type: 'boolean', default: false })
   isFinished: boolean;
 
-  @ManyToOne((type) => User, (user) => user.tasks, { onDelete: 'CASCADE' })
+  @ManyToOne((type) => User, (user) => user.createdTasks, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'creator_uid' })
   user: User;
 }

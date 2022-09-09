@@ -1,9 +1,14 @@
-import { IsBoolean, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateTaskDto {
+  @ApiProperty()
+  @IsOptional()
   @IsString()
-  readonly name: string;
+  text: string;
 
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsBoolean()
-  readonly isFinished: boolean;
+  isFinished: boolean;
 }

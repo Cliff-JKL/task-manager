@@ -4,60 +4,62 @@ import {
   Post,
   Param,
   Body,
-  Patch,
+  Put,
   UseGuards,
-  Request,
-  Session,
   Delete,
+  HttpCode,
+  HttpStatus,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
+import { Task } from './entities/task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task-dto';
-import { Task } from './entities/task.entity';
+import { User } from '../users/entities/user.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { User } from '../common/decorators/user.decorator';
+import { CurrentUser } from '../common/decorators/user.decorator';
+import { GetTaskDto } from './dto/get-task.dto';
 
+@UseGuards(JwtAuthGuard)
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Get()
-  async findAll(@User() user: any): Promise<Task[]> {
-    return this.tasksService.findAll(user.userId);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  findOne(
-    @Param('id') id: string,
-    @User() user: any,
-  ): Promise<Task | undefined> {
-    return this.tasksService.findOne(id, user.userId);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Post()
   async create(
     @Body() createTaskDto: CreateTaskDto,
-    @User() user: any,
-  ): Promise<CreateTaskDto> {
-    return this.tasksService.create(createTaskDto, user.userId);
+    @CurrentUser() user: User,
+  ): Promise<Task> {
+    const task = await this.tasksService.create(createTaskDto, user.uid);
+    return task;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Patch(':id')
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<GetTaskDto> {
+    const task = await this.tasksService.findOneById(+id);
+    return new GetTaskDto(task);
+  }
+
+  @Put(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateTaskDto: UpdateTaskDto,
-    @User() user: any,
-  ): Promise<UpdateTaskDto> {
-    return this.tasksService.update(id, updateTaskDto, user.userId);
+    @CurrentUser() user: User,
+  ): Promise<GetTaskDto> {
+    const updatedTask = await this.tasksService.update(
+      +id,
+      updateTaskDto,
+      user.uid,
+    );
+    return new GetTaskDto(updatedTask);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async delete(@Param('id') id: string, @User() user: any): Promise<Task> {
-    return this.tasksService.delete(id, user.userId);
+  @HttpCode(HttpStatus.OK)
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ): Promise<void> {
+    return await this.tasksService.delete(+id, user.uid);
   }
 }

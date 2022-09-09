@@ -1,9 +1,14 @@
-import { IsBoolean, IsString } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, NotEquals } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTaskDto {
+  @ApiProperty()
   @IsString()
-  readonly name: string;
+  @NotEquals('', { message: 'task text should not be empty' })
+  text: string;
 
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsBoolean()
-  readonly isFinished: boolean;
+  isFinished = false;
 }
