@@ -41,14 +41,16 @@ export class AuthController {
 
   @Post('signin')
   async signin(
-    @Res({ passthrough: true }) res,
+    @Res({ passthrough: true }) res: Response,
     @Body() userDto: CreateUserDto,
   ): Promise<{ token: string; expire: number }> {
     const tokenData = await this.authService.signin(userDto);
     res.cookie('refreshToken', tokenData.refreshToken, {
       maxAge: tokenData.rtExpire,
-      path: '/api/auth',
+      // path: '/api/auth',
       httpOnly: true,
+      sameSite: "none",
+      secure: true,
     });
     return {
       token: tokenData.accessToken,
@@ -59,15 +61,17 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refresh(@CurrentUser() user: any, @Res({ passthrough: true }) res) {
+  async refresh(@CurrentUser() user: any, @Res({ passthrough: true }) res: Response) {
     const refreshedTokenData = await this.authService.refreshTokens(
       user.uid,
       user.refreshToken,
     );
     res.cookie('refreshToken', refreshedTokenData.refreshToken, {
       maxAge: refreshedTokenData.rtExpire,
-      path: '/api/auth',
+      // path: '/api/auth',
       httpOnly: true,
+      sameSite: "none",
+      secure: true,
     });
     return {
       token: refreshedTokenData.accessToken,
@@ -81,13 +85,14 @@ export class AuthController {
   async logout(
     @CurrentUser() user: User,
     @Request() req,
-    @Res({ passthrough: true }) res,
+    @Res({ passthrough: true }) res: Response,
   ) {
     req.logout(() => {
       this.authService.logout(user.uid);
       res.cookie('refreshToken', '', {
         expires: new Date(),
-        path: '/api/auth',
+        // path: '/api/auth',
+        domain: 'localhost',
       });
     });
   }
