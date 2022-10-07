@@ -11,6 +11,7 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RefreshToken } from './entities/refreshToken.entity';
+import { LoginUserDto } from "../users/dto/login-user.dto";
 
 @Injectable()
 export class AuthService {
@@ -73,7 +74,7 @@ export class AuthService {
     return tokens;
   }
 
-  async signin(userDto: CreateUserDto) {
+  async signin(userDto: LoginUserDto) {
     const user = await this.usersService.findOneByEmail(userDto.email);
     if (user && bcrypt.compareSync(userDto.password, user.password)) {
       const tokens = await this.generateTokens(user);

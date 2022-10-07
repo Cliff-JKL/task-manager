@@ -16,6 +16,7 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CurrentUser } from '../common/decorators/user.decorator';
 import { User } from '../users/entities/user.entity';
+import { LoginUserDto } from "../users/dto/login-user.dto";
 
 @Controller('auth')
 export class AuthController {
@@ -42,15 +43,15 @@ export class AuthController {
   @Post('signin')
   async signin(
     @Res({ passthrough: true }) res: Response,
-    @Body() userDto: CreateUserDto,
+    @Body() userDto: LoginUserDto,
   ): Promise<{ token: string; expire: number }> {
     const tokenData = await this.authService.signin(userDto);
     res.cookie('refreshToken', tokenData.refreshToken, {
       maxAge: tokenData.rtExpire,
       // path: '/api/auth',
       httpOnly: true,
-      sameSite: "none",
-      secure: true,
+      // sameSite: "none",
+      // secure: true,
     });
     return {
       token: tokenData.accessToken,
@@ -70,8 +71,8 @@ export class AuthController {
       maxAge: refreshedTokenData.rtExpire,
       // path: '/api/auth',
       httpOnly: true,
-      sameSite: "none",
-      secure: true,
+      // sameSite: "none",
+      // secure: true,
     });
     return {
       token: refreshedTokenData.accessToken,

@@ -10,6 +10,7 @@ export class GetTaskDto extends CreateTaskDto {
     this.text = entity.text;
     this.isFinished = entity.isFinished;
     this.creator = {
+      uid: entity.user.uid,
       username: entity.user.username,
       email: entity.user.email,
     };
